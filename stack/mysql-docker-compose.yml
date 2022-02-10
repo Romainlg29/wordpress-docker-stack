@@ -1,0 +1,37 @@
+version: "3.3"
+
+services:
+  mariadb:
+    image: mysql:8
+    volumes:
+      # Store mysql data
+      - ../vols/mariadb:/var/lib/mysql:rw
+      - ../configs/mariadb:/etc/mysql/conf.d:ro
+    networks:
+      - local
+    # Stay as swarm, however it should'nt be replicated
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        # Disable traefik on this container
+        - "traefik.enable=false"
+    environment:
+      # Use docker secret to store and share password through the network
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql-root
+    secrets:
+      - mysql-root
+
+networks:
+  local:
+    external:
+      name: local
+
+secrets:
+  mysql-root:
+    external: true
