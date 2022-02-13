@@ -1,0 +1,37 @@
+version: '3.3'
+
+services:
+  {DOMAIN_NAME}:
+    image: nginx
+    volumes:
+      - ../../vols/websites/{DOMAIN_NAME}:/var/www/html:ro
+      - ../../configs/nginx:/etc/nginx/con.f:ro
+    networks:
+      - content
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=web"
+        - "traefik.http.routers.{DOMAIN_NAME}.entrypoints=web,websecure"
+        - "traefik.http.routers.{DOMAIN_NAME}.rule=Host(`{DOMAIN_URL}`)"
+        - "traefik.http.services.{DOMAIN_NAME}.loadbalancer.server.port=80"
+        - "traefik.port=80"
+
+
+networks:
+  content:
+    external:
+      name: content
+  web:
+    external:
+      name: external
+  local:
+    external:
+      name: local
