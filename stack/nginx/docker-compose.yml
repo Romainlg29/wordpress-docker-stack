@@ -4,10 +4,12 @@ services:
   {DOMAIN_NAME}:
     image: nginx
     volumes:
-      - ../../vols/websites/{DOMAIN_NAME}:/var/www/html:ro
-      - ../../configs/nginx:/etc/nginx/con.f:ro
+      - ./wordpress:/var/www/html:ro
+      - ./nginx:/etc/nginx/con.f:ro
     networks:
       - content
+      - web
+      - local
     deploy:
       mode: replicated
       replicas: 1
@@ -31,7 +33,7 @@ networks:
       name: content
   web:
     external:
-      name: external
+      name: web
   local:
     external:
       name: local
