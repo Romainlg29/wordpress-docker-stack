@@ -41,8 +41,6 @@ def create_networks():
         networks.append(dockerClient.networks.create(
             name="web", driver="overlay", attachable=True, check_duplicate=True))
         networks.append(dockerClient.networks.create(
-            name="content", driver="overlay", attachable=True, check_duplicate=True))
-        networks.append(dockerClient.networks.create(
             name="local", driver="overlay", attachable=True, check_duplicate=True))
     except BaseException as ex:
         print(f"{pColors.FAIL}Can't create a network! Aborting{pColors.ENDC}")
@@ -158,7 +156,7 @@ def create_nginx_container(root_secret: string):
 
     def create_database_entries(user_pwd: string, domain_url: string):
         dockerClient.containers.list(filters={'name': 'local_mysql'})[0].exec_run(
-            f'mysql -u root -p{root_secret} -e "CREATE DATABASE {domain_url};CREATE USER \'{domain_url}\'@\'%\' IDENTIFIED BY \'{user_pwd}\';GRANT ALL PRIVILEGE ON {domain_url}.* TO \'{domain_url}\'@\'%\' ;COMMIT;"')
+            f'mysql -u root -p{root_secret} -e "CREATE DATABASE {domain_url};CREATE USER \'{domain_url}\'@\'%\' IDENTIFIED BY \'{user_pwd}\';GRANT ALL PRIVILEGES ON {domain_url}.* TO \'{domain_url}\'@\'%\' ;COMMIT;"')
 
     def create_domain_conf(user_pwd: string, domain_url: string):
         print(f'Creating {domain_url} folder.')
@@ -168,7 +166,7 @@ def create_nginx_container(root_secret: string):
         # NGINX conf
         subprocess.run(["mkdir", f"./vols/websites/{domain_url}/nginx"])
         f = open(f"./configs/nginx/template.conf", "r+")
-        o = open(f"./vols/websites/{domain_url}/nginx/template.conf", "wt")
+        o = open(f"./vols/websites/{domain_url}/nginx/default.conf", "wt")
 
         for l in f:
             o.write(l.replace('{DOMAIN_URL}', domain_url))
@@ -223,12 +221,27 @@ def create_nginx_container(root_secret: string):
     create_compose_file(domain_url)
     deploy(domain_url)
 
+def create_traefik_container():
+    print('Creating Traefik container : ')
+    print("Pulling the image (This can take few minutes.)")
+    dockerClient.images.pull("traefik", "2.6")
+    print("Buiding...")
+    subprocess.run(["docker", "stack", "deploy", "-c",
+                    "./stack/traefik/docker-compose.yml", "web"])
+    if checkService("web_traefik") == False:
+        print(
+            f"{pColors.FAIL}Cannot detect the Traefik service! Aborting{pColors.ENDC}")
+        quit()
+
+    print(f"{pColors.OKGREEN}Traefik container created !{pColors.ENDC}")
+
 
 def init_containers():
     print('Creating containers!')
     root_secret = create_mysql_container()
     create_php_container()
     create_nginx_container(root_secret)
+    create_traefik_container()
 
 
 # INIT

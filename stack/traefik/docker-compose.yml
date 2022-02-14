@@ -16,7 +16,7 @@ services:
     volumes:
       # Link Traefik to the docker socket, that enable auto detection of Traefik
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ../configs/traefik/static/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ../../configs/traefik/static/traefik.yml:/etc/traefik/traefik.yml:ro
     deploy:
       # Make Traefik works as replicated with needed, by default one
       mode: replicated

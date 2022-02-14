@@ -5,9 +5,8 @@ services:
     image: nginx
     volumes:
       - ./wordpress:/var/www/html:ro
-      - ./nginx:/etc/nginx/con.f:ro
+      - ./nginx:/etc/nginx/conf.d:rw
     networks:
-      - content
       - web
       - local
     deploy:
@@ -28,9 +27,6 @@ services:
 
 
 networks:
-  content:
-    external:
-      name: content
   web:
     external:
       name: web
