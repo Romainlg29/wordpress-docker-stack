@@ -23,3 +23,12 @@ To deploy this project run
 ```
 
 Then follow the instructions.
+
+
+## Roadmap
+
+- Code refactoring
+
+- SSL support with let's encrypt
+
+- Scaling
