@@ -21,7 +21,8 @@ To run this deployment, you must install the following packages.
 To deploy this project run
 
 ```bash
-  init.sh
+  chmod +x init.sh
+  ./init.sh
 ```
 
 Then follow the instructions.
@@ -29,8 +30,6 @@ Then follow the instructions.
 
 ## Roadmap
 
-- Code refactoring
+- Scaling
 
 - SSL support with let's encrypt
-
-- Scaling
