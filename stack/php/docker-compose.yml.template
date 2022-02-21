@@ -1,0 +1,29 @@
+version: "3.3"
+
+services:
+  {SERVICE}:
+    image: {NAME}:{TAG}
+    volumes:
+      - ../../vols/websites:/var/www/html:rw
+    networks:
+      - local
+      - content
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        # Disable traefik
+        - "traefik.enable=false"
+
+networks:
+  content:
+    external:
+      name: content
+  local:
+    external:
+      name: local
