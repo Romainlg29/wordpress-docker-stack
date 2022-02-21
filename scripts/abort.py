@@ -1,0 +1,2 @@
+def abort():
+    print('Aborting!')

@@ -1,8 +1,8 @@
 version: "3.3"
 
 services:
-  mysql:
-    image: mysql:8
+  {SERVICE}:
+    image: {NAME}:{TAG}
     volumes:
       # Store mysql data
       - type: bind

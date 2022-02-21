@@ -11,7 +11,9 @@ To run this deployment, you must install the following packages.
 
 ```bash
   apt install curl tar docker docker-compose
-  pip install docker
+  
+  pip install docker # Or run install-python-modules.sh
+  pip install python-dotenv
 ```
     
 ## Deployment
@@ -19,7 +21,7 @@ To run this deployment, you must install the following packages.
 To deploy this project run
 
 ```bash
-  python3 init.py
+  init.sh
 ```
 
 Then follow the instructions.
