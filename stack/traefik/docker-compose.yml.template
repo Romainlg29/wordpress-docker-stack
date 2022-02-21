@@ -1,8 +1,8 @@
 version: "3.3"
 
 services:
-  traefik:
-    image: traefik:2.6
+  {SERVICE}:
+    image: {NAME}:{TAG}
     ports:
       # Define our ports as host mode to make available the user's ip
       - target: 443

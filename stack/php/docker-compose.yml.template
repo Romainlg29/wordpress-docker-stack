@@ -1,13 +1,13 @@
 version: "3.3"
 
 services:
-  php:
-    # Comes with a lot of plugins as mysqli and pdo
-    image: devilbox/php-fpm:8.1-prod
+  {SERVICE}:
+    image: {NAME}:{TAG}
     volumes:
       - ../../vols/websites:/var/www/html:rw
     networks:
       - local
+      - content
     deploy:
       mode: replicated
       replicas: 1
@@ -21,6 +21,9 @@ services:
         - "traefik.enable=false"
 
 networks:
+  content:
+    external:
+      name: content
   local:
     external:
       name: local

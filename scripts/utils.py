@@ -1,7 +1,9 @@
 import secrets
 import string
+import os
 
 from abort import abort
+
 
 class pColors:
     HEADER = '\033[95m'
@@ -13,6 +15,7 @@ class pColors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
 
 def getPassword():
     try:
@@ -31,12 +34,14 @@ def getResponse(text: string):
     except:
         return getResponse()
 
+
 def checkService(dockerClient, service_id):
     try:
         dockerClient.services.get(service_id=service_id)
         return True
     except:
         return False
+
 
 def pullDockerImage(dockerClient, name, tag):
     try:
@@ -48,7 +53,22 @@ def pullDockerImage(dockerClient, name, tag):
             dockerClient.images.pull(name)
         else:
             raise Exception
-        print(f'{pColors.OKGREEN}Successfully pulled {name} from Docker Hub!{pColors.ENDC}')
+        print(
+            f'{pColors.OKGREEN}Successfully pulled {name} from Docker Hub!{pColors.ENDC}')
     except:
         print(f'Cannot pull {name}/{tag} from Docker Hub!')
         abort()
+
+
+# Update our compose template file
+# Replace every placeholder with the right value from the .env file
+# If the .env isn't correct it'll abort
+def updateComposeFile(inp, out, service, image, version):
+    f = open(inp, "r+")
+    o = open(out, "wt")
+
+    for l in f:
+        o.write(l.replace('{SERVICE}', service).replace(
+            '{NAME}', image).replace('{TAG}', version))
+    f.close()
+    o.close()
