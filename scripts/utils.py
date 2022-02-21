@@ -2,8 +2,6 @@ import secrets
 import string
 import os
 
-from abort import abort
-
 
 class pColors:
     HEADER = '\033[95m'
@@ -16,6 +14,9 @@ class pColors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+def abort():
+    print(f'{pColors.FAIL}Aborting!{pColors.ENDC}')
+    quit()
 
 def getPassword():
     try:
@@ -46,17 +47,17 @@ def checkService(dockerClient, service_id):
 def pullDockerImage(dockerClient, name, tag):
     try:
         if name and tag:
-            print(f"Pulling {name}/{tag} ... (This can take few minutes.)")
+            print(f"Pulling {name}:{tag}... (This can take few minutes.)")
             dockerClient.images.pull(name, tag)
         elif name and not tag:
-            print(f"Pulling {name} ... (This can take few minutes.)")
+            print(f"Pulling {name}... (This can take few minutes.)")
             dockerClient.images.pull(name)
         else:
             raise Exception
         print(
             f'{pColors.OKGREEN}Successfully pulled {name} from Docker Hub!{pColors.ENDC}')
     except:
-        print(f'Cannot pull {name}/{tag} from Docker Hub!')
+        print(f'Cannot pull {name}:{tag} from Docker Hub!')
         abort()
 
 

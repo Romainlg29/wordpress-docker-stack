@@ -1,10 +1,8 @@
 import os
-
 import subprocess
+import sys
 
-from utils import pColors, getPassword, generateSecurePassword, checkService, pullDockerImage, updateComposeFile
-from abort import abort
-
+from utils import pColors, getPassword, generateSecurePassword, checkService, pullDockerImage, updateComposeFile, abort
 
 def create_mysql_container(dockerClient):
 
@@ -19,7 +17,7 @@ def create_mysql_container(dockerClient):
     if mysql_pwd == "":
         mysql_pwd = generateSecurePassword()
         print(
-            f"Your root password is:{pColors.OKCYAN} {mysql_pwd} {pColors.ENDC}, please keep it secret!")
+            f"Your root password is:{pColors.OKCYAN} {mysql_pwd}{pColors.ENDC}, please keep it secret!")
 
     # Create a docker secret to store the MYSQL root password
     # It'll be saved as mysql-root
@@ -39,7 +37,7 @@ def create_mysql_container(dockerClient):
     # Update our compose file
     # If not, it'll abort!
     try:
-        updateComposeFile("../stack/mysql/docker-compose.yml.template", "../stack/mysql/docker-compose.yml",
+        updateComposeFile("./stack/mysql/docker-compose.yml.template", "./stack/mysql/docker-compose.yml",
                           os.getenv('MYSQL_SERVICE_NAME'), os.getenv('MYSQL_IMAGE'), os.getenv('MYSQL_VERSION'))
     except:
         print(f"{pColors.FAIL}Cannot create the docker-compose.{pColors.ENDC}")
@@ -50,11 +48,11 @@ def create_mysql_container(dockerClient):
     # Create the stack and deploy the service to our swarm
     # The SQL container will be on the manager node to store the data
     subprocess.run(["docker", "stack", "deploy", "-c",
-                    "../stack/mysql/docker-compose.yml", "local"])
+                    "./stack/mysql/docker-compose.yml", "local"])
 
     # Check if the container is successfully deployed!
     # If not, it'll abort
-    if checkService(f"local_{os.getenv('MYSQL_SERVICE_NAME')}") == False:
+    if checkService(dockerClient, f"local_{os.getenv('MYSQL_SERVICE_NAME')}") == False:
         print(
             f"{pColors.FAIL}Cannot detect {os.getenv('MYSQL_SERVICE_NAME')} service!{pColors.ENDC}")
         abort()

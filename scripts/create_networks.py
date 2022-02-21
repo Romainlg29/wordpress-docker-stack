@@ -7,6 +7,8 @@ def create_networks(dockerClient):
         networks.append(dockerClient.networks.create(
             name="web", driver="overlay", attachable=True, check_duplicate=True))
         networks.append(dockerClient.networks.create(
+            name="content", driver="overlay", attachable=True, check_duplicate=True))
+        networks.append(dockerClient.networks.create(
             name="local", driver="overlay", attachable=True, check_duplicate=True))
     except BaseException as ex:
         print(f"{pColors.FAIL}Can't create a network! Aborting{pColors.ENDC}")

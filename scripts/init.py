@@ -3,12 +3,12 @@ import docker
 from utils import pColors
 from dotenv import load_dotenv
 
-import create_swarm
-import create_networks
-import create_nginx_container
-import create_php_container
-import create_traefik_container
-import create_mysql_container
+from create_swarm import create_swarm
+from create_networks import create_networks
+from create_nginx_container import create_nginx_container
+from create_php_container import create_php_container
+from create_traefik_container import create_traefik_container
+from create_mysql_container import create_mysql_container
 
 
 # Get our env variables
@@ -66,5 +66,5 @@ init_containers()
 
 
 # Finally
-print(f"{pColors.OKGREEN + pColors.BOLD}The deployment was successful!{pColors.ENDC}")
+print(f"{pColors.OKGREEN}The deployment was successful!{pColors.ENDC}")
 
