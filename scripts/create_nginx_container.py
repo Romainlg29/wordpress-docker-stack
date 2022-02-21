@@ -67,7 +67,7 @@ def create_nginx_container(dockerClient, root_secret: string):
 
         for l in f:
             o.write(l.replace('{DB_NAME}', domain_url).replace(
-                '{DB_USERNAME}', domain_url).replace('{DB_PASSWORD}', user_pwd))
+                '{DB_USERNAME}', domain_url).replace('{DB_PASSWORD}', user_pwd).replace('{DB_SERVICE}', f"local_{os.getenv('MYSQL_SERVICE_NAME')}"))
         f.close()
         o.close()
 

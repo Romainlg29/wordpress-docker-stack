@@ -17,6 +17,3 @@ providers:
     exposedByDefault: false
     swarmMode: true
     watch: true
-
-log:
-  level: DEBUG
