@@ -24,6 +24,12 @@ def getPassword():
     except:
         return getPassword()
 
+def askPassword():
+    try:
+        return str(input("Enter the needed password: "))
+    except:
+        return askPassword()
+
 
 def generateSecurePassword():
     return ''.join(secrets.choice(string.ascii_letters + string.digits) for i in range(64))
