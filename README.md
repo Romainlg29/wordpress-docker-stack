@@ -25,7 +25,18 @@ To deploy this project run
   ./init.sh
 ```
 
-Then follow the instructions.
+Then follow the instructions provided by the program.
+
+### Deploy a new wordpress
+
+To deploy a new wordpress, simply run the follow file after completed the init setup
+
+```bash
+  chmod +x init.sh
+  ./deploy-new-wordpress.sh
+```
+
+Then follow the instructions provided by the program.
 
 
 ## Roadmap
