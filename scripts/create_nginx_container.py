@@ -2,10 +2,9 @@ import string
 import subprocess
 import os
 
-from utils import getResponse, pColors, getPassword, generateSecurePassword, checkService, pullDockerImage, abort
+from utils import getResponse, pColors, getPassword, generateSecurePassword, checkService, pullDockerImage, abort, askPassword
 
-
-def create_nginx_container(dockerClient, root_secret: string):
+def create_nginx_container(dockerClient, root_secret: string, init=True):
 
     # Replace dots to underscore and lower the string
     # This is going to be used as service name
@@ -88,8 +87,9 @@ def create_nginx_container(dockerClient, root_secret: string):
 
     def deploy(domain_url: string):
 
-        pullDockerImage(dockerClient, os.getenv(
-            'NGINX_IMAGE'), os.getenv('NGINX_VERSION'))
+        if init:
+            pullDockerImage(dockerClient, os.getenv(
+                'NGINX_IMAGE'), os.getenv('NGINX_VERSION'))
 
         print("Buiding the image!")
 
@@ -105,17 +105,19 @@ def create_nginx_container(dockerClient, root_secret: string):
                 f"{pColors.FAIL}Cannot detect the NGINX service!{pColors.ENDC}")
             abort()
 
-        print(f"{pColors.OKGREEN}NGINX container created ! (3/4){pColors.ENDC}")
+        print(f"{pColors.OKGREEN}NGINX container created ! {'(3/4)' if init else ''}{pColors.ENDC}")
 
-    print(f"{pColors.HEADER}Creating the {os.getenv('NGINX_IMAGE')} container (3/4){pColors.ENDC}")
+    print(f"{pColors.HEADER}Creating the {os.getenv('NGINX_IMAGE')} container {'(3/4)' if init else ''}{pColors.ENDC}")
 
     # Get wordpress from the official repo
-    get_latest_wordpress_build()
+    if init:
+        get_latest_wordpress_build()
 
-    print("You've to enter a root password, leave blank to generate a 64 characters password.")
+    print("You've to enter a password, it's going to be used as your domain credentials to connect to the database, leave blank to generate a 64 characters password.")
     print(f"{pColors.WARNING}Specials characters aren't allowed !{pColors.ENDC}")
 
     # Ask for a password
+    # It'll be used a credentials to connect to the database with the right user
     # If empty, it'll generate a secure one and return it to the user
     # It must be saved!
     mysql_pwd = getPassword()
@@ -138,3 +140,25 @@ def create_nginx_container(dockerClient, root_secret: string):
 
     # Deploy the service
     deploy(domain_url)
+
+
+# Only run this when called by the deploy-new-wordpress.sh script
+if __name__ == "__main__":
+
+    import docker
+    from dotenv import load_dotenv
+
+    # Load envs variables
+    load_dotenv()
+
+    # This part is used to create a new container for another domain
+    # Get the docker client
+    dockerClient = docker.from_env()
+
+    # Ask for the root password created at the init
+    print(f"{pColors.OKBLUE}You must enter the MYSQL root password to continue.{pColors.ENDC}")
+    i = askPassword()
+
+    # Use our function
+    # We're defining init as False to not pull the wordpress tar and to pull the nginx image again
+    create_nginx_container(dockerClient, i, False)
