@@ -32,7 +32,7 @@ Then follow the instructions provided by the program.
 To deploy a new wordpress, simply run the following file after completed the init setup
 
 ```bash
-  chmod +x init.sh
+  chmod +x deploy-new-wordpress.sh
   ./deploy-new-wordpress.sh
 ```
 
