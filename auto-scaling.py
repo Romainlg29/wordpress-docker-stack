@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
             print("\n")
             print("Usage: auto-scaling.py")
-            print("Scales up or down services based on CPU usage")
+            print("Scales up or down services based on CPU usage (Swarm support)")
             print("Thresholds: 30% on average service will scale down and 70% will scale up")
             print("\n")
             print("Recommended to run this script with cron")
