@@ -4,7 +4,7 @@ import os
 
 from utils import getResponse, pColors, getPassword, generateSecurePassword, checkService, pullDockerImage, abort, askPassword
 
-def create_nginx_container(dockerClient, root_secret: string, init=True):
+def create_nginx_container(dockerClient, root_secret: string, init=True, traefik=False):
 
     # Replace dots to underscore and lower the string
     # This is going to be used as service name
@@ -73,8 +73,11 @@ def create_nginx_container(dockerClient, root_secret: string, init=True):
     # Create the compose file
     # Replace all the placeholders
 
-    def create_compose_file(domain_url: string):
-        f = open(f"./stack/nginx/docker-compose.yml.template", "r+")
+    def create_compose_file(domain_url: string, traefik: bool):
+
+        # Create the compose file and replace the placeholders if treafik is enabled
+
+        f = open(f"./stack/nginx/docker-compose.yml.template{'.traefik' if traefik else '' }", "r+")
         o = open(f"./vols/websites/{domain_url}/docker-compose.yml", "wt")
 
         for l in f:
@@ -105,7 +108,7 @@ def create_nginx_container(dockerClient, root_secret: string, init=True):
                 f"{pColors.FAIL}Cannot detect the NGINX service!{pColors.ENDC}")
             abort()
 
-        print(f"{pColors.OKGREEN}NGINX container created ! {'(3/4)' if init else ''}{pColors.ENDC}")
+        print(f"{pColors.OKGREEN}NGINX container created! {'(3/4)' if init else ''}{pColors.ENDC}")
 
     print(f"{pColors.HEADER}Creating the {os.getenv('NGINX_IMAGE')} container {'(3/4)' if init else ''}{pColors.ENDC}")
 
@@ -136,7 +139,7 @@ def create_nginx_container(dockerClient, root_secret: string, init=True):
     create_domain_conf(mysql_pwd, domain_url)
 
     # Creathe the compose file
-    create_compose_file(domain_url)
+    create_compose_file(domain_url, traefik)
 
     # Deploy the service
     deploy(domain_url)
@@ -155,10 +158,13 @@ if __name__ == "__main__":
     # Get the docker client
     dockerClient = docker.from_env()
 
+    # Ask the user if he wants to use a Traefik reverse proxy
+    traefik = True if getResponse("Are you using Traefik as reverse proxy? (y/n) ") == "y" else False
+
     # Ask for the root password created at the init
     print(f"{pColors.OKBLUE}You must enter the MYSQL root password to continue.{pColors.ENDC}")
     i = askPassword()
 
     # Use our function
     # We're defining init as False to not pull the wordpress tar and to pull the nginx image again
-    create_nginx_container(dockerClient, i, False)
+    create_nginx_container(dockerClient, i, False, traefik)

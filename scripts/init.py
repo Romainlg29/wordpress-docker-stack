@@ -1,6 +1,6 @@
 import docker
 
-from utils import pColors
+from utils import pColors, getResponse
 from dotenv import load_dotenv
 
 from create_swarm import create_swarm
@@ -29,12 +29,18 @@ def init_containers():
     # However, if you change, please make sure that you have all the wordpress ext within!
     create_php_container(dockerClient)
 
+    # Ask the user if he wants to use a Traefik reverse proxy
+    traefik = True if getResponse("Do you want to use a Traefik reverse proxy? (y/n) ") == "y" else False
+
     # Create the default NGINX service
     # It comes with Wordpress
-    create_nginx_container(dockerClient, root_secret)
+    create_nginx_container(dockerClient, root_secret, True, traefik)
 
-    # Finally the traefik container
-    create_traefik_container(dockerClient)
+    # Finally the traefik container if needed
+    if traefik:
+        create_traefik_container(dockerClient)
+    else:
+        print(f"{pColors.OKGREEN}Skipping Traefik!{pColors.ENDC}")
 
 
 

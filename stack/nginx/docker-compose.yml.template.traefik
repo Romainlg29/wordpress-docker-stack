@@ -17,6 +17,13 @@ services:
         delay: 10s
       restart_policy:
         condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=web"
+        - "traefik.http.routers.{DOMAIN_NAME}.entrypoints=web,websecure"
+        - "traefik.http.routers.{DOMAIN_NAME}.rule=Host(`{DOMAIN_URL}`)"
+        - "traefik.http.services.{DOMAIN_NAME}.loadbalancer.server.port=80"
+        - "traefik.port=80"
 
 
 networks:
