@@ -10,7 +10,7 @@ An automatic Wordpress stack with Docker Swarm
 To run this deployment, you must install the following packages.
 
 ```bash
-  apt install curl tar docker docker-compose
+  apt install curl tar docker docker-compose python3
   
   pip install docker # Or run install-python-modules.sh
   pip install python-dotenv
@@ -40,7 +40,5 @@ Then follow the instructions provided by the program.
 
 
 ## Roadmap
-
-- Scaling
 
 - SSL support with let's encrypt
