@@ -63,6 +63,7 @@ if __name__ == "__main__":
 
     import docker
     import sys
+    import time
 
     # Get sys args
     if len(sys.argv) > 1:
@@ -72,12 +73,51 @@ if __name__ == "__main__":
             print("\n")
             print("Usage: auto-scaling.py")
             print("Scales up or down services based on CPU usage (Swarm support)")
-            print("Thresholds: 30% on average service will scale down and 70% will scale up")
+            print("Thresholds: < 30% on average service will scale down and 70% > will scale up")
+            print("\n")
+            print('Args:')
+            print('-h: Prints this message')
+            print("-t <seconds>: Time in seconds to wait before running the script again")
             print("\n")
             print("Recommended to run this script with cron")
             print("Ajust the timing to your needs")
             print("\n")
             sys.exit()
+
+
+        # -t args refers to the time in seconds to wait before running the script again
+        # It'll use a while loop which isn't the best to use
+        # Consider using cron instead if you want to run this script every X minutes
+
+        if sys.argv[1] == '-t':
+
+            if sys.argv[2]:
+                try:
+                    interval = int(sys.argv[2])
+
+                     # Get our Docker client
+                    dockerClient = docker.from_env()
+
+                    while True:
+
+                        print(f"Running auto-scaling script every {interval} seconds")
+
+                        # Call auto_scaling function
+                        try:
+                            auto_scaling(dockerClient)
+                        except:
+                            print("An error occured.")
+
+                        # Wait for the interval    
+                        time.sleep(interval)
+
+                except ValueError:
+                    print("Please enter a valid number")
+                    sys.exit()
+
+            else:
+                print("Please enter a valid number")
+                sys.exit()
     
     else:
         
@@ -88,4 +128,4 @@ if __name__ == "__main__":
         try:
             auto_scaling(dockerClient)
         except:
-            print("Error")
+            print("An error occured.")
